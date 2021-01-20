@@ -1,0 +1,80 @@
+<html>
+<body>
+
+<form name="addform" onsubmit="return addStudent()" >
+  Name: <input type="text" name="name"/><br>
+  Age: <input type="text" name="age"/> <br>
+  Course: <input type="text" name="course"/> <br>
+  <input type="submit" name="Add" value="Add"/>
+</form>
+
+<form name="deleteform" onsubmit="return deleteStudent()" >
+  Admission Number: <input type="text" name="admission"/> <br>
+  <input type="submit" name="Delete" value="Delete"/>
+</form>
+
+<div id="demo"></div>
+
+<script>
+function addStudent() {
+  var xmlhttp;
+  xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      console.log(this.responseText);
+      getAllStudents();
+      alert("Student Added!");
+      }
+    };
+  
+  var url = "http://backend:5000/api/v1/students" + "?name=" + addform.name.value + "&age=" + addform.age.value + "&course=" + addform.course.value
+  xmlhttp.open("POST", url, true);
+  xmlhttp.send()
+
+  return false;
+}
+
+function deleteStudent() {
+  var xmlhttp;
+  xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      console.log(this.responseText);
+      alert("Student Deleted!");
+      getAllStudents();
+    }
+  };
+  
+  var url = "http://backend:5000/api/v1/students?admission=" +  deleteform.admission.value
+  xmlhttp.open("DELETE", url, true);
+  xmlhttp.send()
+
+  return false;
+}
+
+function getAllStudents() {
+  var xmlhttp, myObj, x, txt = "";
+  xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      myObj = JSON.parse(this.responseText);
+      console.log(myObj)
+      txt += "<table border='1'>"
+      for (x in myObj) {
+        txt += "<tr>";
+        txt += "<td>" + myObj[x][0] + "</td>";
+        txt += "<td>" + myObj[x][1] + "</td>";
+        txt += "<td>" + myObj[x][2] + "</td>";
+        txt += "<td>" + myObj[x][3] + "</td>";
+        txt +="</tr>";
+      }
+      txt += "</table>"    
+      document.getElementById("demo").innerHTML = txt;
+      }
+    };
+  xmlhttp.open("GET", "http://backend:5000/api/v1/students", true);
+  xmlhttp.send()
+}
+</script>
+</body>
+</html>
